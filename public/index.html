@@ -1,0 +1,789 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Muscle Up Diagnostic Scorecard | Callum on Rings</title>
+<meta name="description" content="Find your missing requirement. Train the right progression. Earn your first muscle up.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#171511;
+    --panel:#1f1c17;
+    --panel-2:#26221b;
+    --line:#353026;
+    --chalk:#f1ede2;
+    --body-c:#c9c2b0;
+    --muted:#8d8571;
+    --wood:#c89b6d;
+    --wood-deep:#a87c4f;
+    --notyet:#bf5b45;
+    --minimum:#d9a441;
+    --good:#a3b86c;
+    --ideal:#c89b6d;
+    --radius:10px;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html,body{background:var(--bg);}
+  body{
+    font-family:'Inter',-apple-system,'Segoe UI',Arial,sans-serif;
+    color:var(--body-c);
+    line-height:1.6;
+    min-height:100vh;
+    font-size:16px;
+  }
+  .display{font-family:'Oswald','Arial Narrow',Arial,sans-serif;text-transform:uppercase;letter-spacing:.04em;color:var(--chalk);}
+
+  .wrap{max-width:760px;margin:0 auto;padding:28px 20px 80px;}
+
+  /* ---------- strap progress ---------- */
+  .strap{position:relative;height:44px;margin:8px 0 36px;}
+  .strap-line{position:absolute;top:50%;left:0;right:0;height:4px;background:var(--line);border-radius:2px;transform:translateY(-50%);}
+  .strap-fill{position:absolute;top:50%;left:0;height:4px;background:var(--wood);border-radius:2px;transform:translateY(-50%);transition:width .45s cubic-bezier(.6,0,.3,1);}
+  .strap-stations{position:absolute;top:0;left:0;right:0;height:100%;display:flex;justify-content:space-between;align-items:center;}
+  .station{width:10px;height:10px;border-radius:50%;background:var(--line);border:2px solid var(--bg);transition:background .3s;}
+  .station.done{background:var(--wood);}
+  .ringmark{position:absolute;top:50%;width:26px;height:26px;border-radius:50%;border:5px solid var(--wood);background:var(--bg);transform:translate(-50%,-50%);box-shadow:0 0 0 3px var(--bg);transition:left .45s cubic-bezier(.6,0,.3,1);}
+  .strap-label{position:absolute;top:-16px;right:0;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);}
+
+  /* ---------- screens ---------- */
+  .screen{display:none;animation:fadein .35s ease;}
+  .screen.active{display:block;}
+  @keyframes fadein{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:none;}}
+  @media (prefers-reduced-motion:reduce){
+    .screen{animation:none;}
+    .strap-fill,.ringmark{transition:none;}
+  }
+
+  .kicker{font-size:12px;letter-spacing:.28em;text-transform:uppercase;color:var(--wood);font-weight:600;margin-bottom:14px;}
+  h1{font-size:clamp(34px,6vw,52px);line-height:1.05;font-weight:700;margin-bottom:18px;}
+  h2{font-size:clamp(26px,4.6vw,36px);line-height:1.12;font-weight:600;margin-bottom:10px;}
+  .rule{width:56px;height:3px;background:var(--wood);margin:20px 0 22px;border:none;}
+  .lead{font-size:17px;max-width:56ch;}
+  .small{font-size:13.5px;color:var(--muted);}
+
+  /* ---------- demo video placeholder ---------- */
+  .media{
+    border:2px dashed var(--line);border-radius:var(--radius);
+    background:repeating-linear-gradient(45deg,transparent,transparent 12px,#ffffff05 12px,#ffffff05 24px);
+    min-height:170px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;
+    margin:20px 0 4px;text-align:center;padding:20px;
+  }
+  .media .cam{width:34px;height:24px;border:2px solid var(--muted);border-radius:4px;position:relative;}
+  .media .cam::after{content:"";position:absolute;left:100%;top:4px;border-left:10px solid var(--muted);border-top:5px solid transparent;border-bottom:5px solid transparent;}
+  .media .m-title{font-family:'Oswald',Arial,sans-serif;text-transform:uppercase;letter-spacing:.08em;color:var(--body-c);font-size:13.5px;font-weight:600;}
+  .media .m-sub{font-size:12.5px;color:var(--muted);}
+  .video-embed{position:relative;border-radius:var(--radius);overflow:hidden;margin:20px auto 4px;background:#000;aspect-ratio:9/16;max-width:340px;width:100%;}
+  .video-embed iframe{position:absolute;top:0;left:0;width:100%;height:100%;border:0;}
+
+  .note{background:#00000033;border:1px solid var(--line);border-radius:8px;padding:12px 16px;margin:0 0 22px;font-size:13.5px;color:var(--body-c);}
+  .note b{color:var(--chalk);font-weight:600;}
+  .note .n-label{color:var(--minimum);font-weight:600;text-transform:uppercase;letter-spacing:.1em;font-size:11px;display:block;margin-bottom:2px;}
+
+  .depth-diagram{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:18px 10px 8px;margin:0 0 22px;}
+  .depth-diagram svg{width:100%;height:auto;display:block;}
+
+  .proves{background:var(--panel);border-left:3px solid var(--wood);padding:14px 18px;border-radius:0 var(--radius) var(--radius) 0;margin:20px 0 6px;font-size:15px;}
+  .proves strong{color:var(--chalk);font-weight:600;}
+  .test-line{margin:14px 0 18px;font-size:15px;}
+  .test-line strong{color:var(--chalk);font-weight:600;}
+
+  /* ---------- options ---------- */
+  .options{display:grid;gap:10px;margin:8px 0 30px;}
+  .opt{
+    display:flex;align-items:center;gap:16px;
+    background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);
+    padding:15px 18px;cursor:pointer;text-align:left;width:100%;
+    color:var(--body-c);font:inherit;transition:border-color .15s,background .15s;
+  }
+  .opt:hover{border-color:var(--wood-deep);background:var(--panel-2);}
+  .opt:focus-visible{outline:2px solid var(--wood);outline-offset:2px;}
+  .opt.selected{border-color:var(--wood);background:var(--panel-2);}
+  .opt .tag{
+    flex:0 0 84px;font-family:'Oswald',Arial,sans-serif;font-size:12.5px;font-weight:600;
+    text-transform:uppercase;letter-spacing:.08em;text-align:center;
+    padding:5px 0;border-radius:5px;background:#00000033;
+  }
+  .tag.t-notyet{color:var(--notyet);box-shadow:inset 0 0 0 1px var(--notyet);}
+  .tag.t-minimum{color:var(--minimum);box-shadow:inset 0 0 0 1px var(--minimum);}
+  .tag.t-good{color:var(--good);box-shadow:inset 0 0 0 1px var(--good);}
+  .tag.t-ideal{color:var(--ideal);box-shadow:inset 0 0 0 1px var(--ideal);}
+  .opt .desc{font-size:15px;}
+  .opt .desc b{color:var(--chalk);font-weight:600;}
+
+  .gate-item{margin-bottom:30px;}
+  .gate-item h3{font-family:'Oswald',Arial,sans-serif;text-transform:uppercase;letter-spacing:.06em;color:var(--chalk);font-size:17px;font-weight:600;margin-bottom:6px;}
+
+  /* ---------- buttons ---------- */
+  .row{display:flex;gap:12px;align-items:center;flex-wrap:wrap;}
+  .btn{
+    font-family:'Oswald',Arial,sans-serif;text-transform:uppercase;letter-spacing:.1em;
+    font-size:15px;font-weight:600;border-radius:8px;cursor:pointer;
+    padding:13px 28px;border:none;transition:transform .1s,opacity .15s;
+  }
+  .btn:focus-visible{outline:2px solid var(--wood);outline-offset:2px;}
+  .btn-primary{background:var(--wood);color:#171511;}
+  .btn-primary:hover{transform:translateY(-1px);}
+  .btn-primary:disabled{opacity:.35;cursor:not-allowed;transform:none;}
+  .btn-ghost{background:transparent;color:var(--muted);border:1px solid var(--line);}
+  .btn-ghost:hover{color:var(--body-c);border-color:var(--wood-deep);}
+
+  /* ---------- intro ---------- */
+  .ring-logo{width:64px;height:64px;border-radius:50%;border:9px solid var(--wood);margin-bottom:26px;position:relative;}
+  .ring-logo::before{content:"";position:absolute;left:50%;bottom:100%;transform:translateX(-50%);width:5px;height:22px;background:var(--line);}
+  .promise{display:grid;gap:6px;margin:26px 0;}
+  .promise div{display:flex;gap:12px;align-items:baseline;font-size:16px;}
+  .promise .diamond{width:8px;height:8px;background:var(--wood);transform:rotate(45deg);flex:0 0 8px;position:relative;top:1px;}
+  .promise b{color:var(--chalk);font-weight:600;}
+
+  /* ---------- email ---------- */
+  .email-box{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:28px;margin-top:24px;}
+  .email-box label{display:block;font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;}
+  .email-box input{
+    width:100%;background:var(--bg);border:1px solid var(--line);border-radius:8px;
+    color:var(--chalk);font:inherit;font-size:16px;padding:13px 16px;margin-bottom:16px;
+  }
+  .email-box input:focus{outline:2px solid var(--wood);outline-offset:1px;border-color:var(--wood);}
+  .err{color:var(--notyet);font-size:13.5px;margin:-8px 0 12px;display:none;}
+
+  /* ---------- results ---------- */
+  .focus-card{background:var(--panel);border:1px solid var(--wood-deep);border-radius:var(--radius);padding:26px;margin:26px 0;}
+  .focus-card .fc-kicker{font-size:11.5px;letter-spacing:.26em;text-transform:uppercase;color:var(--wood);font-weight:600;margin-bottom:8px;}
+  .focus-card h3{font-family:'Oswald',Arial,sans-serif;text-transform:uppercase;letter-spacing:.04em;color:var(--chalk);font-size:24px;font-weight:600;margin-bottom:10px;}
+  .focus-card p{font-size:15px;margin-bottom:12px;}
+  .focus-card p:last-child{margin-bottom:0;}
+  .fc-label{color:var(--wood);font-weight:600;font-size:13px;letter-spacing:.1em;text-transform:uppercase;display:block;margin-bottom:3px;}
+  .fc-block{margin-top:16px;}
+  .video-route{display:flex;align-items:center;gap:12px;background:#00000033;border-radius:8px;padding:12px 16px;margin-top:18px;font-size:15px;}
+  .video-route .play{width:0;height:0;border-left:11px solid var(--wood);border-top:7px solid transparent;border-bottom:7px solid transparent;flex:0 0 11px;}
+  .video-route b{color:var(--chalk);font-weight:600;}
+
+  .focus-card.card-main{border-color:var(--notyet);box-shadow:0 0 0 1px #bf5b4533;}
+  .focus-card.card-main .fc-kicker{color:var(--notyet);}
+  .focus-card.card-second{border-color:var(--minimum);}
+  .focus-card.card-second .fc-kicker{color:var(--minimum);}
+
+  .board{margin:34px 0 10px;}
+  .board h3{font-family:'Oswald',Arial,sans-serif;text-transform:uppercase;letter-spacing:.08em;color:var(--chalk);font-size:16px;font-weight:600;margin-bottom:14px;}
+  .board-row{display:flex;align-items:center;gap:14px;padding:11px 4px;border-bottom:1px solid var(--line);font-size:15px;}
+  .board-row:last-child{border-bottom:none;}
+  .board-row .num{font-family:'Oswald',Arial,sans-serif;color:var(--muted);font-size:13px;flex:0 0 20px;}
+  .board-row .name{flex:1;color:var(--body-c);}
+  .board-row .badge{font-family:'Oswald',Arial,sans-serif;font-size:11.5px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;padding:4px 12px;border-radius:5px;background:#00000033;white-space:nowrap;}
+  .badge.b-notyet{color:var(--notyet);box-shadow:inset 0 0 0 1px var(--notyet);}
+  .badge.b-minimum{color:var(--minimum);box-shadow:inset 0 0 0 1px var(--minimum);}
+  .badge.b-good{color:var(--good);box-shadow:inset 0 0 0 1px var(--good);}
+  .badge.b-ideal{color:var(--ideal);box-shadow:inset 0 0 0 1px var(--ideal);}
+  .badge.b-main{color:#171511;background:var(--notyet);box-shadow:none;}
+  .badge.b-second{color:#171511;background:var(--minimum);box-shadow:none;}
+  .badge.b-strength{color:#171511;background:var(--good);box-shadow:none;}
+  .board-row.r-main{border-left:3px solid var(--notyet);padding-left:12px;background:#bf5b450d;}
+  .board-row.r-second{border-left:3px solid var(--minimum);padding-left:12px;background:#d9a4410d;}
+  .board-row.r-strength{border-left:3px solid var(--good);padding-left:12px;}
+  .board-legend{display:flex;gap:18px;flex-wrap:wrap;margin-top:14px;font-size:12.5px;color:var(--muted);}
+  .board-legend span{display:flex;align-items:center;gap:7px;}
+  .board-legend i{width:10px;height:10px;border-radius:2px;display:inline-block;}
+
+  .cta{background:linear-gradient(135deg,var(--panel-2),var(--panel));border:1px solid var(--wood);border-radius:var(--radius);padding:30px;margin-top:36px;}
+  .cta .fc-kicker{font-size:11.5px;letter-spacing:.26em;text-transform:uppercase;color:var(--wood);font-weight:600;margin-bottom:8px;}
+  .cta h3{font-family:'Oswald',Arial,sans-serif;text-transform:uppercase;color:var(--chalk);font-size:26px;font-weight:700;letter-spacing:.03em;margin-bottom:10px;}
+  .cta p{font-size:15px;margin-bottom:18px;max-width:52ch;}
+
+  footer{margin-top:56px;text-align:center;font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="strap" id="strap" aria-hidden="true">
+    <span class="strap-label" id="strapLabel"></span>
+    <div class="strap-line"></div>
+    <div class="strap-fill" id="strapFill" style="width:0%"></div>
+    <div class="strap-stations" id="strapStations"></div>
+    <div class="ringmark" id="ringmark" style="left:0%"></div>
+  </div>
+
+  <!-- ============ INTRO ============ -->
+  <section class="screen active" id="s-intro">
+    <div class="ring-logo"></div>
+    <div class="kicker">Callum on Rings · Free Diagnostic</div>
+    <h1 class="display">The Muscle Up<br>Diagnostic Scorecard</h1>
+    <hr class="rule">
+    <p class="lead">Most people chase their first muscle up by training everything at once. That is the slow way. There are <b style="color:var(--chalk)">7 requirements</b> that must be earned in order, and almost everyone is missing exactly one of them right now.</p>
+    <div class="promise">
+      <div><span class="diamond"></span><span><b>Find</b> your missing requirement.</span></div>
+      <div><span class="diamond"></span><span><b>Train</b> the right progression.</span></div>
+      <div><span class="diamond"></span><span><b>Earn</b> your first muscle up.</span></div>
+    </div>
+    <p class="small" style="margin-bottom:26px;">Takes about 3 minutes. Be honest with your answers. The scorecard only works if the reps are clean.</p>
+    <button class="btn btn-primary" onclick="go('gate')">Start the diagnostic</button>
+  </section>
+
+  <!-- ============ ENTRY GATE ============ -->
+  <section class="screen" id="s-gate">
+    <div class="kicker">Entry Gate</div>
+    <h2 class="display">Before the 7 requirements</h2>
+    <hr class="rule">
+    <p class="lead" style="margin-bottom:28px;">The muscle up pathway assumes a base of pulling and pushing strength. Answer honestly. Clean, full range reps only.</p>
+
+    <div class="gate-item">
+      <h3>Strict pull ups on rings</h3>
+      <p class="small" style="margin-bottom:12px;">Dead hang to chin over ring height, full range, no kipping or swinging.</p>
+      <div class="media"><span class="cam"></span><span class="m-title">Strict ring pull up standard</span><span class="m-sub">Demo video coming soon</span></div>
+      <div class="options" data-gate="pullups"></div>
+    </div>
+    <div class="gate-item">
+      <h3>Bodyweight dips on rings</h3>
+      <p class="small" style="margin-bottom:12px;">On the rings, not bars. Full lockout at the top, controlled through the bottom, rings stable.</p>
+      <div class="media"><span class="cam"></span><span class="m-title">Ring dip standard</span><span class="m-sub">Demo video coming soon</span></div>
+      <div class="options" data-gate="dips"></div>
+    </div>
+    <div class="gate-item">
+      <h3>Pain free training</h3>
+      <p class="small" style="margin-bottom:12px;">No wrist, elbow or shoulder pain during or after pulling and pushing work.</p>
+      <div class="options" data-gate="pain"></div>
+    </div>
+
+    <div class="row">
+      <button class="btn btn-ghost" onclick="go('intro')">Back</button>
+      <button class="btn btn-primary" id="gateNext" disabled onclick="gateNext()">Continue</button>
+    </div>
+  </section>
+
+  <!-- ============ REQUIREMENT SCREENS (built by JS) ============ -->
+  <div id="reqScreens"></div>
+
+  <!-- ============ EMAIL ============ -->
+  <section class="screen" id="s-email">
+    <div class="kicker">One last thing</div>
+    <h2 class="display">Your scorecard is ready</h2>
+    <hr class="rule">
+    <p class="lead">Enter your email and I will show your result now, plus send you the full <b style="color:var(--chalk)">7 Requirements Scorecard PDF</b> so you can retest and track your progress.</p>
+    <div class="email-box">
+      <label for="emailInput">Email address</label>
+      <input type="email" id="emailInput" placeholder="you@example.com" autocomplete="email">
+      <p class="err" id="emailErr">That does not look like a valid email. Check and try again.</p>
+      <div class="row">
+        <button class="btn btn-primary" id="emailBtn" onclick="submitEmail()">Show my result</button>
+        <button class="btn btn-ghost" onclick="goBackFromEmail()">Back</button>
+      </div>
+    </div>
+    <p class="small" style="margin-top:16px;">By entering your email you agree to receive your result plus training emails from Callum on Rings. No spam. Unsubscribe any time.</p>
+  </section>
+
+  <!-- ============ RESULT ============ -->
+  <section class="screen" id="s-result">
+    <div id="resultBody"></div>
+    <div class="row" style="margin-top:30px;">
+      <button class="btn btn-ghost" onclick="restart()">Retake the diagnostic</button>
+    </div>
+  </section>
+
+  <footer>Callum on Rings · Clean reps. Earned standards.</footer>
+</div>
+
+<script>
+/* =====================================================
+   LEAD CAPTURE
+   Posts to our own serverless function (/api/submit),
+   which stores the lead in Supabase, adds the Resend
+   contact, and sends the result email. Keeps the Resend
+   key server side.
+   ===================================================== */
+function sendToEmailPlatform(email, result){
+  const record = {
+    email: email,
+    entry_gate: state.gate,
+    scores: state.scores,
+    primary_focus: result.primaryKey
+  };
+  fetch("/api/submit", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(record)
+  }).catch(err => console.error("Lead capture failed:", err));
+}
+
+/* ---------------- data ---------------- */
+const GATE = {
+  pullups: {
+    opts:[
+      {v:"fail", tag:"notyet",  txt:"<b>Fewer than 10</b> clean reps"},
+      {v:"min",  tag:"minimum", txt:"<b>10</b> clean reps"},
+      {v:"good", tag:"good",    txt:"<b>10 plus</b> clean reps"},
+      {v:"ideal",tag:"ideal",   txt:"<b>12 plus</b> clean reps"}
+    ]
+  },
+  dips: {
+    opts:[
+      {v:"fail", tag:"notyet",  txt:"<b>Fewer than 5</b> clean reps"},
+      {v:"min",  tag:"minimum", txt:"<b>5</b> clean reps"},
+      {v:"good", tag:"good",    txt:"<b>8</b> clean reps"},
+      {v:"ideal",tag:"ideal",   txt:"<b>10</b> clean reps"}
+    ]
+  },
+  pain: {
+    opts:[
+      {v:"fail", tag:"notyet",  txt:"I currently have <b>wrist, elbow or shoulder pain</b>"},
+      {v:"min",  tag:"minimum", txt:"<b>No pain</b> in wrists, elbows or shoulders"},
+      {v:"good", tag:"good",    txt:"<b>Fully pain free</b>"},
+      {v:"ideal",tag:"ideal",   txt:"Fully pain free <b>and controlled</b>"}
+    ]
+  }
+};
+
+const DEPTH_DIAGRAM = `
+<div class="depth-diagram" role="img" aria-label="Deep ring dip depth guide showing three shoulder positions relative to the ring">
+<svg viewBox="0 0 680 210" xmlns="http://www.w3.org/2000/svg">
+  <!-- panel 1: not deep enough -->
+  <g>
+    <line x1="115" y1="8" x2="115" y2="66" stroke="var(--line)" stroke-width="5"/>
+    <circle cx="115" cy="92" r="24" fill="none" stroke="var(--wood)" stroke-width="6"/>
+    <line x1="55" y1="52" x2="175" y2="52" stroke="var(--notyet)" stroke-width="2" stroke-dasharray="5 5"/>
+    <circle cx="115" cy="52" r="9" fill="var(--notyet)"/>
+    <text x="115" y="150" text-anchor="middle" fill="var(--chalk)" font-size="13" font-family="Oswald,Arial,sans-serif" letter-spacing="1">UPPER ARM PARALLEL</text>
+    <text x="115" y="172" text-anchor="middle" fill="var(--notyet)" font-size="12.5" font-family="Inter,Arial,sans-serif" font-weight="600">Not deep enough</text>
+  </g>
+  <!-- panel 2: better -->
+  <g>
+    <line x1="340" y1="8" x2="340" y2="66" stroke="var(--line)" stroke-width="5"/>
+    <circle cx="340" cy="92" r="24" fill="none" stroke="var(--wood)" stroke-width="6"/>
+    <line x1="280" y1="74" x2="400" y2="74" stroke="var(--minimum)" stroke-width="2" stroke-dasharray="5 5"/>
+    <circle cx="340" cy="74" r="9" fill="var(--minimum)"/>
+    <text x="340" y="150" text-anchor="middle" fill="var(--chalk)" font-size="13" font-family="Oswald,Arial,sans-serif" letter-spacing="1">SHOULDER NEAR RING TOP</text>
+    <text x="340" y="172" text-anchor="middle" fill="var(--minimum)" font-size="12.5" font-family="Inter,Arial,sans-serif" font-weight="600">Better, may still need power</text>
+  </g>
+  <!-- panel 3: the standard -->
+  <g>
+    <line x1="565" y1="8" x2="565" y2="66" stroke="var(--line)" stroke-width="5"/>
+    <circle cx="565" cy="92" r="24" fill="none" stroke="var(--wood)" stroke-width="6"/>
+    <line x1="505" y1="112" x2="625" y2="112" stroke="var(--good)" stroke-width="2" stroke-dasharray="5 5"/>
+    <circle cx="565" cy="112" r="9" fill="var(--good)"/>
+    <text x="565" y="150" text-anchor="middle" fill="var(--chalk)" font-size="13" font-family="Oswald,Arial,sans-serif" letter-spacing="1">SHOULDER NEAR RING BASE</text>
+    <text x="565" y="172" text-anchor="middle" fill="var(--good)" font-size="12.5" font-family="Inter,Arial,sans-serif" font-weight="600">The standard</text>
+  </g>
+  <text x="340" y="200" text-anchor="middle" fill="var(--muted)" font-size="11.5" font-family="Inter,Arial,sans-serif">Dot shows shoulder height at the bottom of the dip</text>
+</svg>
+</div>`;
+
+const REQS = [
+  {
+    key:"r1", num:1, name:"False Grip Lean Back Rows",
+    proves:"You can combine a ring row, false grip, a lean back position and the correct pulling line. This is the exact line your muscle up will follow.",
+    test:"Perform false grip ring rows while leaning back, keeping the rings close and pulling towards your lower chest.",
+    opts:[
+      {v:"notyet", txt:"<b>Fewer than 5</b> clean reps"},
+      {v:"minimum",txt:"<b>5</b> clean reps"},
+      {v:"good",   txt:"<b>8</b> clean reps"},
+      {v:"ideal",  txt:"<b>10</b> clean reps"}
+    ],
+    focus:"False grip lean back rows",
+    supportive:"Ring row mechanics, false grip setup, wrist tolerance.",
+    moveOn:"You can complete your reps without losing false grip, pulling wide or losing the lean back.",
+    video:"False Grip Lean Back Rows"
+  },
+  {
+    key:"r2", num:2, name:"False Grip Hang Tolerance",
+    proves:"You can tolerate your full bodyweight through the false grip without slipping or collapsing.",
+    test:"From a full hang, with arms straight and feet completely off the floor, hold false grip without the wrist slipping underneath the ring. This is NOT a row or lean back position.",
+    note:"<span class='n-label'>Be clear on the position</span>This is a <b>dead hang</b> with your full bodyweight through the false grip. If your feet touch the floor or you are in a row position, the time does not count.",
+    opts:[
+      {v:"notyet", txt:"<b>Under 5 seconds</b>"},
+      {v:"minimum",txt:"<b>5 seconds</b>"},
+      {v:"good",   txt:"<b>10 seconds</b>"},
+      {v:"ideal",  txt:"<b>15 seconds</b>"}
+    ],
+    focus:"False grip hangs",
+    supportive:"Feet assisted false grip hangs, wrist conditioning, grip tolerance.",
+    moveOn:"You can hold false grip in a full hang without the wrist slipping underneath the ring.",
+    video:"False Grip Hangs"
+  },
+  {
+    key:"r3", num:3, name:"False Grip Lean Back Pull Ups",
+    proves:"You can pull in false grip using the specific muscle up line: leaning back, rings close, towards the lower chest.",
+    test:"Perform false grip pull ups while leaning back and pulling the rings towards your lower chest. No kipping.",
+    opts:[
+      {v:"notyet", txt:"<b>Fewer than 3</b> clean reps"},
+      {v:"minimum",txt:"<b>3</b> clean reps"},
+      {v:"good",   txt:"<b>5</b> clean reps"},
+      {v:"ideal",  txt:"<b>8 to 10</b> clean reps"}
+    ],
+    focus:"False grip lean back pull ups",
+    supportive:"Assisted false grip pull ups, high pulls, false grip rows.",
+    moveOn:"You can pull with the rings close, without kipping or pulling wide.",
+    video:"False Grip Lean Back Pull Ups"
+  },
+  {
+    key:"r4", num:4, name:"Top Pull Isometric Hold",
+    proves:"You can arrive in, and own, the position just before the transition. This is where most muscle ups are won or lost.",
+    test:"Pull to the top position, lean back, keep the rings close to your chest and hold.",
+    opts:[
+      {v:"notyet", txt:"<b>Under 2 seconds</b>, or I drop immediately"},
+      {v:"minimum",txt:"<b>2 seconds</b>"},
+      {v:"good",   txt:"<b>3 seconds</b>"},
+      {v:"ideal",  txt:"<b>5 plus seconds</b>"}
+    ],
+    focus:"Top pull isometric holds",
+    supportive:"Chest contact pulls, high false grip pulls, ring closeness drills.",
+    moveOn:"You can hold the rings close to your chest without losing position.",
+    video:"Top Pull Isometric Hold"
+  },
+  {
+    key:"r5", num:5, name:"Deep Ring Dip Capacity",
+    proves:"You have the shoulder range and strength to receive the transition in a deep dip. Depth is not subjective here. It has a standard.",
+    test:"Perform a deep ring dip with control. No pain, no collapse in the bottom.",
+    note:"<span class='n-label'>The depth standard</span>Upper arm parallel to the floor is <b>not deep enough</b>. Shoulder near the top of the ring is better, but may still need extra power. The standard: <b>shoulder near the base of the ring</b> at the bottom of the dip.",
+    diagram:true,
+    opts:[
+      {v:"notyet", txt:"<b>Cannot yet</b> reach a controlled deep dip at the standard"},
+      {v:"minimum",txt:"<b>1</b> deep ring dip"},
+      {v:"good",   txt:"<b>2 to 3</b> deep ring dips"},
+      {v:"ideal",  txt:"<b>5</b> deep ring dips"}
+    ],
+    focus:"Deep ring dips",
+    supportive:"Assisted deep dips, shoulder mobility, bottom position strength.",
+    moveOn:"You can dip to the depth standard without pain, collapse or loss of control.",
+    video:"Deep Ring Dip Standard"
+  },
+  {
+    key:"r6", num:6, name:"Assisted Transition Mechanics",
+    proves:"You can move from the pull position into the bottom of the dip with control. The pathway itself, not a jump through it.",
+    test:"Perform controlled assisted transitions (feet or band) without jumping, rushing or letting the rings drift wide.",
+    note:"<span class='n-label'>What counts as a small band</span>The thinnest band in your set, giving light assistance only, around 10 to 15&nbsp;mm wide. It should smooth the movement, not lift you through it. If the band is doing the work, it is not a small band.",
+    opts:[
+      {v:"notyet", txt:"<b>Cannot yet</b> transition with control, even assisted"},
+      {v:"minimum",txt:"<b>3</b> controlled feet assisted reps (feet on floor)"},
+      {v:"good",   txt:"<b>3 to 5</b> controlled reps with <b>feet elevated</b> (harder than feet on floor) or a lighter band"},
+      {v:"ideal",  txt:"<b>3 to 5</b> small band full range reps"}
+    ],
+    focus:"Assisted transitions",
+    supportive:"Band setup, feet elevated transitions, deep dip work, false grip control.",
+    moveOn:"You can transition smoothly without the rings drifting wide or relying on a jump.",
+    video:"Assisted Transition Mechanics"
+  },
+  {
+    key:"r7", num:7, name:"Controlled Reverse Rep",
+    proves:"You can control the hardest part of the muscle up in reverse: lowering through the transition and catching high with the rings close.",
+    test:"Start at the top, lower through the dip and transition, then catch high with the rings close to your chest.",
+    opts:[
+      {v:"notyet", txt:"<b>Cannot yet</b> lower through with control"},
+      {v:"minimum",txt:"<b>1</b> clean rep"},
+      {v:"good",   txt:"<b>2</b> clean reps"},
+      {v:"ideal",  txt:"<b>3</b> clean reps"}
+    ],
+    focus:"Controlled reverse muscle ups",
+    supportive:"Top support holds, rings turned out support, eccentric transition control.",
+    moveOn:"You can lower slowly and catch the rings high without collapsing.",
+    video:"Controlled Reverse Rep"
+  }
+];
+
+const TAGLABEL = {notyet:"Not Yet", minimum:"Minimum", good:"Good", ideal:"Ideal"};
+
+// Vimeo video IDs per requirement key. Add more as videos are ready.
+const VIDEOS = {
+  r1: "1209523312", // False Grip Ring Row
+  r3: "1209523845", // False Grip Pull Ups
+  r5: "1209524652", // Dip Depth
+  r6: "1209526343", // Band Assisted Transition
+  r7: "1209527521"  // Eccentric / Controlled Reverse Rep
+};
+// Standalone videos used outside the requirement screens
+const VIDEO_CLEAN = "1209522402"; // Clean Muscle Up (result page, all 7 earned)
+function mediaBlock(key, title){
+  const id = VIDEOS[key];
+  if(id){
+    return `<div class="video-embed"><iframe src="https://player.vimeo.com/video/${id}?badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479" allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media; web-share" referrerpolicy="strict-origin-when-cross-origin" title="${title}"></iframe></div>`;
+  }
+  return `<div class="media"><span class="cam"></span><span class="m-title">${title}</span><span class="m-sub">Demo video coming soon</span></div>`;
+}
+
+/* ---------------- state ---------------- */
+const state = { gate:{}, scores:{}, screen:"intro" };
+const ORDER = ["intro","gate","r1","r2","r3","r4","r5","r6","r7","email","result"];
+
+/* ---------------- build UI ---------------- */
+function buildGate(){
+  document.querySelectorAll("[data-gate]").forEach(box=>{
+    const key = box.dataset.gate;
+    GATE[key].opts.forEach(o=>{
+      const b = document.createElement("button");
+      b.className = "opt";
+      b.innerHTML = `<span class="tag t-${o.tag}">${TAGLABEL[o.tag]}</span><span class="desc">${o.txt}</span>`;
+      b.onclick = ()=>{
+        state.gate[key] = o.v;
+        box.querySelectorAll(".opt").forEach(x=>x.classList.remove("selected"));
+        b.classList.add("selected");
+        document.getElementById("gateNext").disabled = Object.keys(state.gate).length < 3;
+      };
+      box.appendChild(b);
+    });
+  });
+}
+
+function buildReqScreens(){
+  const host = document.getElementById("reqScreens");
+  REQS.forEach(r=>{
+    const s = document.createElement("section");
+    s.className = "screen";
+    s.id = "s-"+r.key;
+    s.innerHTML = `
+      <div class="kicker">Requirement ${r.num} of 7</div>
+      <h2 class="display">${r.name}</h2>
+      <hr class="rule">
+      <div class="proves"><strong>What this proves:</strong> ${r.proves}</div>
+      <p class="test-line"><strong>How to test it:</strong> ${r.test}</p>
+      ${mediaBlock(r.key, r.name)}
+      ${r.diagram ? DEPTH_DIAGRAM : ""}
+      ${r.note ? `<div class="note" style="margin-top:14px;">${r.note}</div>` : `<div style="height:14px;"></div>`}
+      <div class="options" id="opts-${r.key}"></div>
+      <div class="row">
+        <button class="btn btn-ghost" onclick="goPrev('${r.key}')">Back</button>
+        <button class="btn btn-primary" id="next-${r.key}" disabled onclick="goNext('${r.key}')">Continue</button>
+      </div>`;
+    host.appendChild(s);
+    const box = s.querySelector("#opts-"+r.key);
+    r.opts.forEach(o=>{
+      const b = document.createElement("button");
+      b.className = "opt";
+      b.innerHTML = `<span class="tag t-${o.v}">${TAGLABEL[o.v]}</span><span class="desc">${o.txt}</span>`;
+      b.onclick = ()=>{
+        state.scores[r.key] = o.v;
+        box.querySelectorAll(".opt").forEach(x=>x.classList.remove("selected"));
+        b.classList.add("selected");
+        document.getElementById("next-"+r.key).disabled = false;
+      };
+      box.appendChild(b);
+    });
+  });
+}
+
+function buildStrap(){
+  const st = document.getElementById("strapStations");
+  for(let i=0;i<ORDER.length;i++){
+    const d = document.createElement("div");
+    d.className = "station";
+    st.appendChild(d);
+  }
+}
+
+/* ---------------- navigation ---------------- */
+function go(key){
+  state.screen = key;
+  document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
+  document.getElementById("s-"+key).classList.add("active");
+  updateStrap();
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+function goNext(cur){ go(ORDER[ORDER.indexOf(cur)+1]); }
+function goPrev(cur){ go(ORDER[ORDER.indexOf(cur)-1]); }
+function goBackFromEmail(){ go("r7"); }
+function gateNext(){ go("r1"); }
+
+function updateStrap(){
+  const idx = ORDER.indexOf(state.screen);
+  const pct = (idx/(ORDER.length-1))*100;
+  document.getElementById("strapFill").style.width = pct+"%";
+  document.getElementById("ringmark").style.left = pct+"%";
+  document.querySelectorAll(".station").forEach((d,i)=>d.classList.toggle("done", i<=idx));
+  const labels = {intro:"", gate:"Entry Gate", r1:"1 / 7", r2:"2 / 7", r3:"3 / 7", r4:"4 / 7", r5:"5 / 7", r6:"6 / 7", r7:"7 / 7", email:"Almost there", result:"Your result"};
+  document.getElementById("strapLabel").textContent = labels[state.screen] || "";
+}
+
+/* ---------------- email ---------------- */
+function submitEmail(){
+  const input = document.getElementById("emailInput");
+  const err = document.getElementById("emailErr");
+  const email = input.value.trim();
+  const valid = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email);
+  if(!valid){ err.style.display="block"; input.focus(); return; }
+  err.style.display="none";
+  const result = computeResult();
+  sendToEmailPlatform(email, result);
+  renderResult(result);
+  go("result");
+}
+
+/* ---------------- diagnostic logic ---------------- */
+function computeResult(){
+  const gateFail = Object.values(state.gate).includes("fail");
+  const failedGateItems = Object.keys(state.gate).filter(k=>state.gate[k]==="fail");
+
+  // RED, main block: first "Not Yet" requirement, in order
+  let primary = null;
+  for(const r of REQS){
+    if(state.scores[r.key] === "notyet"){ primary = r; break; }
+  }
+
+  // AMBER, second focus. Priority order:
+  // 1. Deep dips as the parallel priority (primary is a pulling requirement 1 to 4 and R5 is Not Yet)
+  // 2. The next "Not Yet" after the primary
+  // 3. The first requirement still sitting at Minimum
+  let secondary = null;
+  let secondaryIsParallel = false;
+  if(primary){
+    if(["r1","r2","r3","r4"].includes(primary.key) && state.scores["r5"]==="notyet"){
+      secondary = REQS[4];
+      secondaryIsParallel = true;
+    }
+    if(!secondary){
+      const after = REQS.slice(REQS.indexOf(primary)+1);
+      secondary = after.find(r=>state.scores[r.key]==="notyet") || null;
+    }
+  }
+  if(!secondary){
+    secondary = REQS.find(r=>state.scores[r.key]==="minimum" && (!primary || r.key!==primary.key)) || null;
+  }
+
+  // GREEN, strengths: anything at Good or Ideal
+  const strengths = REQS.filter(r=>["good","ideal"].includes(state.scores[r.key]));
+  const minimums = REQS.filter(r=>state.scores[r.key]==="minimum");
+
+  return {
+    gateFail, failedGateItems,
+    primary, secondary, secondaryIsParallel,
+    strengths, minimums,
+    primaryKey: gateFail ? "entry-gate" : (primary ? primary.key : "ready")
+  };
+}
+
+/* ---------------- result rendering ---------------- */
+function boardHTML(res){
+  let rows = REQS.map(r=>{
+    const sc = state.scores[r.key];
+    const isMain = res.primary && res.primary.key===r.key && !res.gateFail;
+    const isSecond = res.secondary && res.secondary.key===r.key && !res.gateFail && !isMain;
+    const isStrength = ["good","ideal"].includes(sc);
+    let rowClass = "", badge = "";
+    if(isMain){ rowClass="r-main"; badge=`<span class="badge b-main">Main Block</span>`; }
+    else if(isSecond){ rowClass="r-second"; badge=`<span class="badge b-second">Second Focus</span>`; }
+    else if(isStrength){ rowClass="r-strength"; badge=`<span class="badge b-strength">Strength · ${TAGLABEL[sc]}</span>`; }
+    else { badge=`<span class="badge b-${sc}">${TAGLABEL[sc]}</span>`; }
+    return `<div class="board-row ${rowClass}"><span class="num">0${r.num}</span><span class="name">${r.name}</span>${badge}</div>`;
+  }).join("");
+  const legend = `
+    <div class="board-legend">
+      <span><i style="background:var(--notyet)"></i>Red: your main block</span>
+      <span><i style="background:var(--minimum)"></i>Amber: work on this next</span>
+      <span><i style="background:var(--good)"></i>Green: current strengths</span>
+    </div>`;
+  return `<div class="board"><h3>Your full scorecard</h3>${rows}${legend}</div>`;
+}
+
+function focusCardHTML(r, kicker, cardClass){
+  return `
+  <div class="focus-card ${cardClass||""}">
+    <div class="fc-kicker">${kicker}</div>
+    <h3>${r.name}</h3>
+    <p>${r.proves}</p>
+    <div class="fc-block"><span class="fc-label">Primary training focus</span>${r.focus}</div>
+    <div class="fc-block"><span class="fc-label">Supportive work</span>${r.supportive}</div>
+    <div class="fc-block"><span class="fc-label">Move on when</span>${r.moveOn}</div>
+    <div class="video-route"><span class="play"></span><span>Watch this first: <b>${r.video}</b></span></div>
+  </div>`;
+}
+
+function ctaHTML(){
+  return `
+  <div class="cta">
+    <div class="fc-kicker">When you are ready to go deeper</div>
+    <h3>The First Muscle Up Blueprint</h3>
+    <p>Every requirement broken down with the full progressions, the standards to hit before you move on, the mistakes that stall people for months, and the exact video route for your result.</p>
+    <button class="btn btn-primary" onclick="blueprintCta()">Get the Blueprint</button>
+  </div>`;
+}
+function blueprintCta(){
+  alert("The Blueprint is nearly ready. Your result email will include first access.");
+  // TODO: replace with the live checkout link when ready
+}
+
+function renderResult(res){
+  const host = document.getElementById("resultBody");
+  let html = "";
+
+  if(res.gateFail){
+    const names = {pullups:"strict ring pull ups (build to 10 clean reps)", dips:"ring dips (build to 5 to 10 clean reps)", pain:"pain free wrists, elbows and shoulders"};
+    const missing = res.failedGateItems.map(k=>names[k]);
+    html += `
+      <div class="kicker">Your result</div>
+      <h2 class="display">You are before the pathway, and that is fine</h2>
+      <hr class="rule">
+      <p class="lead">You have not failed anything. You are simply before the muscle up pathway itself. Right now, muscle up drills would be wasted effort. The fastest route to your first muscle up is to build the base first.</p>
+      <div class="focus-card card-main">
+        <div class="fc-kicker">🔴 Your current priority</div>
+        <h3>Build foundational pulling and pushing strength</h3>
+        <p>Close the gap on: <b style="color:var(--chalk)">${missing.join(" · ")}</b></p>
+        <div class="fc-block"><span class="fc-label">Come back when</span>You can do 10 clean strict pull ups and 5 clean dips on the rings, pain free. Then retake this scorecard. The 7 requirements will be waiting.</div>
+        <div class="video-route"><span class="play"></span><span>Watch this first: <b>Entry Gate: Pull Ups and Dips</b></span></div>
+      </div>`;
+    html += ctaHTML();
+  }
+  else if(!res.primary){
+    html += `
+      <div class="kicker">Your result</div>
+      <h2 class="display">You have earned all 7 requirements</h2>
+      <hr class="rule">
+      <p class="lead">Every requirement is at Minimum or above. You are ready to attempt clean, full ring muscle ups. No kipping, rings close, controlled catch.</p>
+      <div class="focus-card">
+        <div class="fc-kicker">Your next step</div>
+        <h3>Attempt the full muscle up</h3>
+        <p>Warm up thoroughly, set your false grip, pull high with the rings close, and commit to the transition you have already trained.</p>
+        <div class="video-embed"><iframe src="https://player.vimeo.com/video/${VIDEO_CLEAN}?badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479" allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media; web-share" referrerpolicy="strict-origin-when-cross-origin" title="Clean Muscle Up Example"></iframe></div>
+        <div class="video-route"><span class="play"></span><span>Watch this first: <b>Clean Muscle Up Example</b></span></div>
+      </div>`;
+    if(res.minimums.length){
+      html += `<p class="lead" style="margin-top:8px;">Worth knowing: <b style="color:var(--chalk)">${res.minimums.map(m=>m.name).join(", ")}</b> ${res.minimums.length===1?"is":"are"} still at Minimum. You can attempt now, but pushing ${res.minimums.length===1?"it":"these"} to Good will make your first rep smoother and more repeatable.</p>`;
+    }
+    html += boardHTML(res);
+    html += ctaHTML();
+  }
+  else {
+    html += `
+      <div class="kicker">Your result</div>
+      <h2 class="display">Your main block:<br>${res.primary.name}</h2>
+      <hr class="rule">
+      <p class="lead">This is the requirement we are predicting is holding your muscle up back. Everything after it depends on it, so this is where your training time earns the most progress right now.</p>`;
+    html += focusCardHTML(res.primary, "🔴 Main block. Start here", "card-main");
+    if(res.secondary){
+      const secondIntro = res.secondaryIsParallel
+        ? "Deep dip capacity takes time to build and does not depend on your pulling work, so train it alongside your main block, not after it."
+        : (state.scores[res.secondary.key]==="notyet"
+            ? "Once your main block moves, this is the next thing most likely to stop you. Keep it on your radar."
+            : "You have passed this one at Minimum. It works, but it still needs building before it stops costing you.");
+      html += `
+      <div class="focus-card card-second">
+        <div class="fc-kicker">🟠 Second focus</div>
+        <h3>${res.secondary.name}</h3>
+        <p>${secondIntro}</p>
+        <div class="fc-block"><span class="fc-label">Primary training focus</span>${res.secondary.focus}</div>
+        <div class="fc-block"><span class="fc-label">Supportive work</span>${res.secondary.supportive}</div>
+        <div class="video-route"><span class="play"></span><span>Watch this first: <b>${res.secondary.video}</b></span></div>
+      </div>`;
+    }
+    if(res.strengths.length){
+      html += `<p class="lead" style="margin-top:8px;">🟢 Your current strengths: <b style="color:var(--chalk)">${res.strengths.map(s=>s.name).join(", ")}</b>. Keep these ticking over. They do not need your focus right now.</p>`;
+    }
+    html += boardHTML(res);
+    html += ctaHTML();
+  }
+  host.innerHTML = html;
+}
+
+function restart(){
+  state.gate = {}; state.scores = {};
+  document.querySelectorAll(".opt").forEach(x=>x.classList.remove("selected"));
+  document.getElementById("gateNext").disabled = true;
+  REQS.forEach(r=>document.getElementById("next-"+r.key).disabled = true);
+  document.getElementById("emailInput").value = "";
+  go("intro");
+}
+
+/* ---------------- init ---------------- */
+buildGate();
+buildReqScreens();
+buildStrap();
+updateStrap();
+</script>
+</body>
+</html>
