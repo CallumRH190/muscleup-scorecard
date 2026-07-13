@@ -5,6 +5,14 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Muscle Up Diagnostic Scorecard | Callum on Rings</title>
 <meta name="description" content="Find your missing requirement. Train the right progression. Earn your first muscle up.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Find the one thing stopping your first muscle up">
+<meta property="og:description" content="Free 3 minute diagnostic. There are 7 requirements for a ring muscle up and almost everyone is missing exactly one. Find yours.">
+<meta property="og:image" content="/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Find the one thing stopping your first muscle up">
+<meta name="twitter:description" content="Free 3 minute diagnostic. Find your missing muscle up requirement.">
+<meta name="twitter:image" content="/og.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
@@ -207,8 +215,8 @@
   <!-- ============ INTRO ============ -->
   <section class="screen active" id="s-intro">
     <div class="ring-logo"></div>
-    <div class="kicker">Callum on Rings · Free Diagnostic</div>
-    <h1 class="display">The Muscle Up<br>Diagnostic Scorecard</h1>
+    <div class="kicker">Callum on Rings · The Muscle Up Diagnostic Scorecard</div>
+    <h1 class="display">Find the one thing<br>stopping your first muscle up</h1>
     <hr class="rule">
     <p class="lead">Most people chase their first muscle up by training everything at once. That is the slow way. There are <b style="color:var(--chalk)">7 requirements</b> that must be earned in order, and almost everyone is missing exactly one of them right now.</p>
     <div class="promise">
@@ -217,7 +225,7 @@
       <div><span class="diamond"></span><span><b>Earn</b> your first muscle up.</span></div>
     </div>
     <p class="small" style="margin-bottom:26px;">Takes about 3 minutes. Be honest with your answers. The scorecard only works if the reps are clean.</p>
-    <button class="btn btn-primary" onclick="go('gate')">Start the diagnostic</button>
+    <button class="btn btn-primary" onclick="go('gate')">Find my missing requirement</button>
   </section>
 
   <!-- ============ ENTRY GATE ============ -->
@@ -230,13 +238,13 @@
     <div class="gate-item">
       <h3>Strict pull ups on rings</h3>
       <p class="small" style="margin-bottom:12px;">Dead hang to chin over ring height, full range, no kipping or swinging.</p>
-      <div class="video-embed" style="aspect-ratio:4/3;"><iframe src="https://player.vimeo.com/video/1209558077?badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479" allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media; web-share" referrerpolicy="strict-origin-when-cross-origin" title="Ring Pull Up Standards"></iframe></div>
+      <div class="video-embed" style="aspect-ratio:4/3;"><iframe src="https://player.vimeo.com/video/1209558077?badge=0&amp;color=c89b6d&amp;autopause=0&amp;player_id=0&amp;app_id=58479" allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media; web-share" referrerpolicy="strict-origin-when-cross-origin" title="Ring Pull Up Standards"></iframe></div>
       <div class="options" data-gate="pullups"></div>
     </div>
     <div class="gate-item">
       <h3>Bodyweight dips on rings</h3>
       <p class="small" style="margin-bottom:12px;">On the rings, not bars. Full lockout at the top, controlled through the bottom, rings stable.</p>
-      <div class="video-embed"><iframe src="https://player.vimeo.com/video/1209524652?badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479" allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media; web-share" referrerpolicy="strict-origin-when-cross-origin" title="Ring Dip Standard"></iframe></div>
+      <div class="video-embed"><iframe src="https://player.vimeo.com/video/1209524652?badge=0&amp;color=c89b6d&amp;autopause=0&amp;player_id=0&amp;app_id=58479" allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media; web-share" referrerpolicy="strict-origin-when-cross-origin" title="Ring Dip Standard"></iframe></div>
       <div class="options" data-gate="dips"></div>
     </div>
     <div class="gate-item">
@@ -495,7 +503,7 @@ const VIDEO_CLEAN = "1209522402"; // Clean Muscle Up (result page, all 7 earned)
 function mediaBlock(key, title){
   const id = VIDEOS[key];
   if(id){
-    return `<div class="video-embed"><iframe src="https://player.vimeo.com/video/${id}?badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479" allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media; web-share" referrerpolicy="strict-origin-when-cross-origin" title="${title}"></iframe></div>`;
+    return `<div class="video-embed"><iframe src="https://player.vimeo.com/video/${id}?badge=0&amp;color=c89b6d&amp;autopause=0&amp;player_id=0&amp;app_id=58479" allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media; web-share" referrerpolicy="strict-origin-when-cross-origin" title="${title}"></iframe></div>`;
   }
   return `<div class="media"><span class="cam"></span><span class="m-title">${title}</span><span class="m-sub">Demo video coming soon</span></div>`;
 }
@@ -554,6 +562,7 @@ function buildReqScreens(){
         box.querySelectorAll(".opt").forEach(x=>x.classList.remove("selected"));
         b.classList.add("selected");
         document.getElementById("next-"+r.key).disabled = false;
+        setTimeout(()=>{ if(state.scores[r.key]===o.v) goNext(r.key); }, 400);
       };
       box.appendChild(b);
     });
@@ -730,7 +739,7 @@ function renderResult(res){
         <div class="fc-kicker">Your next step</div>
         <h3>Attempt the full muscle up</h3>
         <p>Warm up thoroughly, set your false grip, pull high with the rings close, and commit to the transition you have already trained.</p>
-        <div class="video-embed"><iframe src="https://player.vimeo.com/video/${VIDEO_CLEAN}?badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479" allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media; web-share" referrerpolicy="strict-origin-when-cross-origin" title="Clean Muscle Up Example"></iframe></div>
+        <div class="video-embed"><iframe src="https://player.vimeo.com/video/${VIDEO_CLEAN}?badge=0&amp;color=c89b6d&amp;autopause=0&amp;player_id=0&amp;app_id=58479" allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media; web-share" referrerpolicy="strict-origin-when-cross-origin" title="Clean Muscle Up Example"></iframe></div>
         <div class="video-route"><span class="play"></span><span>Watch this first: <b>Clean Muscle Up Example</b></span></div>
       </div>`;
     if(res.minimums.length){
