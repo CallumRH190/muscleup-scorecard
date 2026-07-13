@@ -84,6 +84,42 @@
   .media .m-sub{font-size:12.5px;color:var(--muted);}
   .video-embed{position:relative;border-radius:var(--radius);overflow:hidden;margin:20px auto 4px;background:#000;aspect-ratio:9/16;max-width:340px;width:100%;}
   .video-embed iframe{position:absolute;top:0;left:0;width:100%;height:100%;border:0;}
+  /* collapsed video toggles */
+  .vt{margin:18px 0 6px;}
+  .vt-btn{display:flex;align-items:center;gap:12px;width:100%;text-align:left;background:var(--panel-2);border:1px solid var(--line);border-radius:10px;padding:13px 16px;color:var(--body-c);font:inherit;font-size:14.5px;cursor:pointer;transition:border-color .2s;}
+  .vt-btn:hover{border-color:var(--wood);}
+  .vt-btn b{color:var(--chalk);font-weight:600;}
+  .vt-play{width:0;height:0;border-top:6px solid transparent;border-bottom:6px solid transparent;border-left:9px solid var(--wood);flex:none;}
+  .vt-chev{margin-left:auto;color:var(--wood);transition:transform .25s;}
+  .vt.open .vt-chev{transform:rotate(90deg);}
+  .vt-body{display:none;}
+  .vt.open .vt-body{display:block;}
+  /* blurred result preview on the email screen */
+  .preview-wrap{position:relative;margin:22px 0 6px;border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;}
+  .preview-board{filter:blur(7px);opacity:.75;padding:18px;pointer-events:none;user-select:none;}
+  .pv-row{display:flex;align-items:center;justify-content:space-between;padding:9px 6px;border-bottom:1px solid var(--line);}
+  .pv-row:last-child{border-bottom:none;}
+  .pv-name{font-size:13.5px;color:var(--body-c);}
+  .pv-pill{font-size:10px;letter-spacing:.1em;text-transform:uppercase;padding:4px 10px;border-radius:6px;border:1px solid;}
+  .pv-red{color:var(--notyet);border-color:var(--notyet);}
+  .pv-amber{color:var(--minimum);border-color:var(--minimum);}
+  .pv-green{color:var(--good);border-color:var(--good);}
+  .preview-lock{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;background:rgba(23,21,17,.35);}
+  .preview-lock .lock{width:34px;height:34px;border:2px solid var(--wood);border-radius:8px;position:relative;}
+  .preview-lock .lock:before{content:"";position:absolute;top:-14px;left:50%;transform:translateX(-50%);width:18px;height:18px;border:2px solid var(--wood);border-bottom:none;border-radius:10px 10px 0 0;}
+  .preview-lock span{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--chalk);}
+  /* PDF bonus card */
+  .pdf-card{display:flex;gap:14px;align-items:center;margin:18px 0 4px;padding:14px;border:1px solid var(--line);border-radius:10px;background:var(--panel-2);}
+  .pdf-thumb{flex:none;width:58px;height:76px;border:1px solid var(--wood);border-radius:4px;background:linear-gradient(160deg,#1f1c17,#26221b);position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;}
+  .pdf-thumb .ring{width:16px;height:16px;border:2.5px solid var(--wood);border-radius:50%;}
+  .pdf-thumb .bar{width:60%;height:2px;background:var(--line);}
+  .pdf-thumb .tag{position:absolute;bottom:5px;font-size:7px;letter-spacing:.14em;color:var(--wood);}
+  .pdf-copy{font-size:13.5px;line-height:1.5;color:var(--body-c);}
+  .pdf-copy b{color:var(--chalk);}
+  /* intro credibility strip */
+  .cred{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 22px;}
+  .cred span{font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);border:1px solid var(--line);border-radius:20px;padding:6px 13px;}
+  .cred span b{color:var(--wood);font-weight:600;}
 
   .note{background:#00000033;border:1px solid var(--line);border-radius:8px;padding:12px 16px;margin:0 0 22px;font-size:13.5px;color:var(--body-c);}
   .note b{color:var(--chalk);font-weight:600;}
@@ -224,7 +260,16 @@
       <div><span class="diamond"></span><span><b>Train</b> the right progression.</span></div>
       <div><span class="diamond"></span><span><b>Earn</b> your first muscle up.</span></div>
     </div>
-    <p class="small" style="margin-bottom:26px;">Takes about 3 minutes. Be honest with your answers. The scorecard only works if the reps are clean.</p>
+    <p class="small" style="margin-bottom:18px;">Takes about 3 minutes. Be honest with your answers. The scorecard only works if the reps are clean.</p>
+    <div class="cred">
+      <span><b>7</b> checks</span>
+      <span><b>3</b> minutes</span>
+      <span><b>Free</b> diagnostic</span>
+      <span>Built by <b>Callum</b> · ring strength coach</span>
+    </div>
+    <!-- TESTIMONIAL SLOT: when Callum has a real quote, add it here, e.g.
+    <div class="pdf-card" style="margin-bottom:22px;"><div class="pdf-copy">"Quote from a real student." <b>— Name</b></div></div>
+    -->
     <button class="btn btn-primary" onclick="go('gate')">Find my missing requirement</button>
   </section>
 
@@ -238,13 +283,23 @@
     <div class="gate-item">
       <h3>Strict pull ups on rings</h3>
       <p class="small" style="margin-bottom:12px;">Dead hang to chin over ring height, full range, no kipping or swinging.</p>
-      <div class="video-embed" style="aspect-ratio:4/3;"><iframe src="https://player.vimeo.com/video/1209558077?badge=0&amp;color=c89b6d&amp;autopause=0&amp;player_id=0&amp;app_id=58479" allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media; web-share" referrerpolicy="strict-origin-when-cross-origin" title="Ring Pull Up Standards"></iframe></div>
+      <div class="vt" id="vtGate1">
+        <button type="button" class="vt-btn" onclick="openVideo('vtGate1','1209558077','Ring Pull Up Standards')">
+          <span class="vt-play"></span><span>Watch the test: <b>Ring Pull Up Standards</b></span><span class="vt-chev">▸</span>
+        </button>
+        <div class="vt-body" id="vtGate1-body"></div>
+      </div>
       <div class="options" data-gate="pullups"></div>
     </div>
     <div class="gate-item">
       <h3>Bodyweight dips on rings</h3>
       <p class="small" style="margin-bottom:12px;">On the rings, not bars. Full lockout at the top, controlled through the bottom, rings stable.</p>
-      <div class="video-embed"><iframe src="https://player.vimeo.com/video/1209524652?badge=0&amp;color=c89b6d&amp;autopause=0&amp;player_id=0&amp;app_id=58479" allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media; web-share" referrerpolicy="strict-origin-when-cross-origin" title="Ring Dip Standard"></iframe></div>
+      <div class="vt" id="vtGate2">
+        <button type="button" class="vt-btn" onclick="openVideo('vtGate2','1209524652','Ring Dip Standard')">
+          <span class="vt-play"></span><span>Watch the test: <b>Ring Dip Standard</b></span><span class="vt-chev">▸</span>
+        </button>
+        <div class="vt-body" id="vtGate2-body"></div>
+      </div>
       <div class="options" data-gate="dips"></div>
     </div>
     <div class="gate-item">
@@ -267,7 +322,15 @@
     <div class="kicker">One last thing</div>
     <h2 class="display">Your scorecard is ready</h2>
     <hr class="rule">
-    <p class="lead">Enter your email and I will show your result now, plus send you the full <b style="color:var(--chalk)">7 Requirements Scorecard PDF</b> so you can retest and track your progress.</p>
+    <p class="lead">Your 7 requirement scorecard is built. Enter your email and I will show it now, plus send your result breakdown so you can retest and track progress.</p>
+    <div class="preview-wrap" aria-hidden="true">
+      <div class="preview-board" id="previewBoard"></div>
+      <div class="preview-lock"><div class="lock"></div><span>Your scorecard</span></div>
+    </div>
+    <div class="pdf-card">
+      <div class="pdf-thumb"><div class="ring"></div><div class="bar"></div><div class="bar"></div><span class="tag">PDF</span></div>
+      <div class="pdf-copy"><b>Bonus: the 7 Requirements Scorecard PDF.</b> Every standard on one page so you can retest monthly and watch the reds turn green.</div>
+    </div>
     <div class="email-box">
       <label for="emailInput">Email address</label>
       <input type="email" id="emailInput" placeholder="you@example.com" autocomplete="email">
@@ -503,9 +566,36 @@ const VIDEO_CLEAN = "1209522402"; // Clean Muscle Up (result page, all 7 earned)
 function mediaBlock(key, title){
   const id = VIDEOS[key];
   if(id){
-    return `<div class="video-embed"><iframe src="https://player.vimeo.com/video/${id}?badge=0&amp;color=c89b6d&amp;autopause=0&amp;player_id=0&amp;app_id=58479" allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media; web-share" referrerpolicy="strict-origin-when-cross-origin" title="${title}"></iframe></div>`;
+    return videoToggle(id, title);
   }
   return `<div class="media"><span class="cam"></span><span class="m-title">${title}</span><span class="m-sub">Demo video coming soon</span></div>`;
+}
+// Collapsed-by-default video. The iframe is only injected on first open,
+// so screens stay fast and answer options stay above the fold.
+let _vtSeq = 0;
+function videoToggle(id, title){
+  const uid = "vt" + (++_vtSeq);
+  return `
+  <div class="vt" id="${uid}">
+    <button type="button" class="vt-btn" onclick="openVideo('${uid}','${id}','${title.replace(/'/g,"")}')">
+      <span class="vt-play"></span><span>Watch the test: <b>${title}</b></span><span class="vt-chev">▸</span>
+    </button>
+    <div class="vt-body" id="${uid}-body"></div>
+  </div>`;
+}
+function openVideo(uid, id, title){
+  const body = document.getElementById(uid+"-body");
+  const wrap = document.getElementById(uid);
+  if(!body) return;
+  if(wrap.classList.contains("open")){
+    wrap.classList.remove("open");
+    return;
+  }
+  if(!body.dataset.loaded){
+    body.innerHTML = `<div class="video-embed"><iframe src="https://player.vimeo.com/video/${id}?badge=0&color=c89b6d&autopause=0&player_id=0&app_id=58479" allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media; web-share" referrerpolicy="strict-origin-when-cross-origin" title="${title}"></iframe></div>`;
+    body.dataset.loaded = "1";
+  }
+  wrap.classList.add("open");
 }
 
 /* ---------------- state ---------------- */
@@ -584,7 +674,19 @@ function go(key){
   document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
   document.getElementById("s-"+key).classList.add("active");
   updateStrap();
+  if(key === "email") buildPreview();
   window.scrollTo({top:0,behavior:"smooth"});
+}
+// Blurred teaser of the user's actual scorecard behind the email gate.
+function buildPreview(){
+  const host = document.getElementById("previewBoard");
+  if(!host) return;
+  const cls = {notyet:"pv-red", minimum:"pv-amber", good:"pv-green", ideal:"pv-green"};
+  const lbl = {notyet:"Focus", minimum:"Minimum", good:"Good", ideal:"Ideal"};
+  host.innerHTML = REQS.map(r=>{
+    const v = state.scores[r.key] || "notyet";
+    return `<div class="pv-row"><span class="pv-name">${r.name}</span><span class="pv-pill ${cls[v]}">${lbl[v]}</span></div>`;
+  }).join("");
 }
 function goNext(cur){ go(ORDER[ORDER.indexOf(cur)+1]); }
 function goPrev(cur){ go(ORDER[ORDER.indexOf(cur)-1]); }
@@ -704,7 +806,38 @@ function ctaHTML(){
   </div>`;
 }
 function blueprintCta(){
-  alert("The Blueprint is nearly ready. Your result email will include first access.");
+  // Record buying intent so launch day can start with the warmest leads.
+  try {
+    const email = (document.getElementById("emailInput")||{}).value || state.email || "";
+    fetch("https://wzeiwntvhqvhdurowgux.supabase.co/rest/v1/muscleup_leads", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "apikey": "sb_publishable_kMdFesGsSqX0flb1fErnOw_1jCuNk0T",
+        "Authorization": "Bearer sb_publishable_kMdFesGsSqX0flb1fErnOw_1jCuNk0T",
+        "Prefer": "return=minimal"
+      },
+      body: JSON.stringify({
+        email: email,
+        entry_gate: {},
+        scores: state.scores || {},
+        primary_focus: "blueprint-interest",
+        tag: "blueprint-interest"
+      })
+    }).catch(()=>{});
+  } catch(e){}
+  // Branded notice instead of a raw browser alert
+  let note = document.getElementById("bpNote");
+  if(!note){
+    note = document.createElement("div");
+    note.id = "bpNote";
+    note.style.cssText = "margin-top:14px;padding:14px 18px;border:1px solid var(--wood);border-radius:10px;background:rgba(200,155,109,0.08);color:var(--chalk);font-size:14.5px;line-height:1.5;";
+    note.innerHTML = "<b style='color:var(--wood)'>You are on the first access list.</b> The Blueprint is nearly ready. Your result email address gets it before anyone else.";
+    const btn = document.querySelector(".cta .btn");
+    if(btn && btn.parentNode) btn.parentNode.appendChild(note);
+  }
+  const btn = document.querySelector(".cta .btn");
+  if(btn){ btn.textContent = "You are on the list"; btn.disabled = true; btn.style.opacity = "0.65"; }
   // TODO: replace with the live checkout link when ready
 }
 
