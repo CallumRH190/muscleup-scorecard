@@ -120,6 +120,36 @@
   .cred{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 22px;}
   .cred span{font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);border:1px solid var(--line);border-radius:20px;padding:6px 13px;}
   .cred span b{color:var(--wood);font-weight:600;}
+  /* ---------- pathway result visual ---------- */
+  .pw-lede{font-size:13.5px;color:var(--muted);margin:6px 0 18px;line-height:1.5;}
+  .pw{position:relative;}
+  .pw-row{display:flex;gap:16px;position:relative;}
+  .pw-track{flex:none;width:26px;display:flex;justify-content:center;position:relative;}
+  .pw-track:before{content:"";position:absolute;top:0;bottom:0;left:50%;width:3px;transform:translateX(-50%);background:var(--line);}
+  .pw-row:first-child .pw-track:before{top:14px;}
+  .pw-row:last-child .pw-track:before{bottom:auto;height:16px;}
+  .pw-node{position:relative;z-index:1;width:14px;height:14px;border-radius:50%;margin-top:12px;background:var(--panel);border:3px solid var(--line);}
+  .pw-node.n-green{border-color:var(--good);background:var(--good);}
+  .pw-node.n-amber{border-color:var(--minimum);background:var(--minimum);}
+  .pw-node.n-red{border-color:var(--notyet);background:transparent;}
+  .pw-node.n-main{width:20px;height:20px;margin-top:9px;background:transparent;border-color:var(--notyet);box-shadow:0 0 0 4px rgba(191,91,69,0.18);animation:pwpulse 2.2s ease-in-out infinite;}
+  .pw-node.pw-goal{width:22px;height:22px;margin-top:8px;background:transparent;border:3px solid var(--wood);box-shadow:0 0 14px rgba(200,155,109,0.35);}
+  @keyframes pwpulse{0%,100%{box-shadow:0 0 0 4px rgba(191,91,69,0.18);}50%{box-shadow:0 0 0 9px rgba(191,91,69,0.06);}}
+  @media (prefers-reduced-motion: reduce){.pw-node.n-main{animation:none;}}
+  .pw-info{flex:1;padding:8px 0 22px;border-bottom:1px dashed var(--line);margin-bottom:0;display:flex;flex-direction:column;gap:7px;}
+  .pw-row:last-child .pw-info{border-bottom:none;}
+  .pw-name{font-size:14.5px;color:var(--chalk);font-weight:600;display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+  .pw-num{font-size:10.5px;letter-spacing:.12em;color:var(--muted);font-weight:500;}
+  .pw-sub{font-size:12px;color:var(--muted);}
+  .pw-youare{font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--notyet);border:1px solid var(--notyet);border-radius:4px;padding:3px 8px;}
+  .pw-meta{display:flex;align-items:center;gap:12px;flex-wrap:wrap;}
+  .pw-ticks{display:inline-flex;gap:4px;}
+  .pw-ticks i{width:16px;height:5px;border-radius:3px;background:var(--line);}
+  .pw-ticks i.on.t-red{background:var(--notyet);}
+  .pw-ticks i.on.t-amber{background:var(--minimum);}
+  .pw-ticks i.on.t-green{background:var(--good);}
+  .pw-summit .pw-name{color:var(--wood);letter-spacing:.04em;text-transform:uppercase;font-size:13.5px;}
+  .pw-row.pw-here .pw-info{border-bottom-style:solid;border-bottom-color:rgba(191,91,69,0.35);}
 
   .note{background:#00000033;border:1px solid var(--line);border-radius:8px;padding:12px 16px;margin:0 0 22px;font-size:13.5px;color:var(--body-c);}
   .note b{color:var(--chalk);font-weight:600;}
@@ -762,17 +792,38 @@ function computeResult(){
 
 /* ---------------- result rendering ---------------- */
 function boardHTML(res){
-  let rows = REQS.map(r=>{
+  const ready = !res.gateFail && !res.primary;
+  // Summit node — the goal itself
+  let rows = `
+    <div class="pw-row pw-summit ${ready ? "pw-here" : ""}">
+      <div class="pw-track"><span class="pw-node pw-goal"></span></div>
+      <div class="pw-info">
+        <span class="pw-name">First Ring Muscle Up</span>
+        ${ready ? `<span class="badge b-strength">You are here · attempt it</span>` : `<span class="pw-sub">Where this pathway ends</span>`}
+      </div>
+    </div>`;
+  // Requirements drawn top-down from 7 to 1 — a climb read from the summit
+  rows += [...REQS].reverse().map(r=>{
     const sc = state.scores[r.key];
     const isMain = res.primary && res.primary.key===r.key && !res.gateFail;
     const isSecond = res.secondary && res.secondary.key===r.key && !res.gateFail && !isMain;
     const isStrength = ["good","ideal"].includes(sc);
-    let rowClass = "", badge = "";
-    if(isMain){ rowClass="r-main"; badge=`<span class="badge b-main">Main Block</span>`; }
-    else if(isSecond){ rowClass="r-second"; badge=`<span class="badge b-second">Second Focus</span>`; }
-    else if(isStrength){ rowClass="r-strength"; badge=`<span class="badge b-strength">Strength · ${TAGLABEL[sc]}</span>`; }
-    else { badge=`<span class="badge b-${sc}">${TAGLABEL[sc]}</span>`; }
-    return `<div class="board-row ${rowClass}"><span class="num">0${r.num}</span><span class="name">${r.name}</span>${badge}</div>`;
+    const tone = isMain ? "red" : (sc==="notyet" ? "red" : (sc==="minimum" ? "amber" : "green"));
+    let badge = "";
+    if(isMain) badge = `<span class="badge b-main">Main Block</span>`;
+    else if(isSecond) badge = `<span class="badge b-second">Second Focus</span>`;
+    else if(isStrength) badge = `<span class="badge b-strength">Strength · ${TAGLABEL[sc]}</span>`;
+    else badge = `<span class="badge b-${sc}">${TAGLABEL[sc]}</span>`;
+    const lvl = {notyet:0, minimum:1, good:2, ideal:3}[sc] ?? 0;
+    const ticks = [1,2,3].map(i=>`<i class="${i<=lvl ? "on t-"+tone : ""}"></i>`).join("");
+    return `
+    <div class="pw-row ${isMain ? "pw-here" : ""}">
+      <div class="pw-track"><span class="pw-node n-${tone} ${isMain ? "n-main" : ""}"></span></div>
+      <div class="pw-info">
+        <span class="pw-name"><span class="pw-num">0${r.num}</span>${r.name}${isMain ? `<span class="pw-youare">You are here</span>` : ""}</span>
+        <span class="pw-meta"><span class="pw-ticks">${ticks}</span>${badge}</span>
+      </div>
+    </div>`;
   }).join("");
   const legend = `
     <div class="board-legend">
@@ -780,7 +831,7 @@ function boardHTML(res){
       <span><i style="background:var(--minimum)"></i>Amber: work on this next</span>
       <span><i style="background:var(--good)"></i>Green: current strengths</span>
     </div>`;
-  return `<div class="board"><h3>Your full scorecard</h3>${rows}${legend}</div>`;
+  return `<div class="board"><h3>Your pathway to the muscle up</h3><p class="pw-lede">Seven requirements, earned in order. The ring marks the first gap — that is where your training goes.</p><div class="pw">${rows}</div>${legend}</div>`;
 }
 
 function focusCardHTML(r, kicker, cardClass){
