@@ -210,6 +210,30 @@ export default async function handler(req, res){
     } catch (e) {
       console.error("Resend send error:", e);
     }
+
+    // Notify Callum of the new lead (never blocks the user's flow)
+    try {
+      const focusLabel = primary_focus || "unknown";
+      const scoreLines = Object.entries(scores || {})
+        .map(([k, v]) => `<tr><td style="padding:4px 12px 4px 0;color:#555;">${k}</td><td style="padding:4px 0;"><b>${v}</b></td></tr>`)
+        .join("");
+      await fetch("https://api.resend.com/emails", {
+        method: "POST",
+        headers: rHeaders,
+        body: JSON.stringify({
+          from: FROM_EMAIL,
+          to: "info@callumhardingham.com",
+          subject: `New lead: ${email} (${focusLabel})`,
+          html: `<div style="font-family:Arial,sans-serif;font-size:14px;color:#222;">
+            <p><b>New muscle up diagnostic lead</b></p>
+            <p>Email: <b>${email}</b><br>Result: <b>${focusLabel}</b></p>
+            <table style="font-size:13px;">${scoreLines}</table>
+          </div>`
+        })
+      });
+    } catch (e) {
+      console.error("Lead notification error:", e);
+    }
   } else {
     console.warn("RESEND_API_KEY not set — skipping contact add and email send.");
   }
