@@ -844,7 +844,7 @@ function focusCardHTML(r, kicker, cardClass){
     <div class="fc-block"><span class="fc-label">Primary training focus</span>${r.focus}</div>
     <div class="fc-block"><span class="fc-label">Supportive work</span>${r.supportive}</div>
     <div class="fc-block"><span class="fc-label">Move on when</span>${r.moveOn}</div>
-    <div class="video-route"><span class="play"></span><span>Watch this first: <b>${r.video}</b></span></div>
+    ${VIDEOS[r.key] ? videoToggle(VIDEOS[r.key], r.video) : `<div class="video-route"><span class="play"></span><span>Watch this first: <b>${r.video}</b></span></div>`}
   </div>`;
 }
 
@@ -910,7 +910,8 @@ function renderResult(res){
         <h3>Build foundational pulling and pushing strength</h3>
         <p>Close the gap on: <b style="color:var(--chalk)">${missing.join(" · ")}</b></p>
         <div class="fc-block"><span class="fc-label">Come back when</span>You can do 10 clean strict pull ups and 5 clean dips on the rings, pain free. Then retake this scorecard. The 7 requirements will be waiting.</div>
-        <div class="video-route"><span class="play"></span><span>Watch this first: <b>Entry Gate: Pull Ups and Dips</b></span></div>
+        ${videoToggle("1209558077", "Ring Pull Up Standards")}
+        ${videoToggle("1209524652", "Ring Dip Standard")}
       </div>`;
     html += ctaHTML();
   }
@@ -925,7 +926,7 @@ function renderResult(res){
         <h3>Attempt the full muscle up</h3>
         <p>Warm up thoroughly, set your false grip, pull high with the rings close, and commit to the transition you have already trained.</p>
         <div class="video-embed"><iframe src="https://player.vimeo.com/video/${VIDEO_CLEAN}?badge=0&amp;color=c89b6d&amp;autopause=0&amp;player_id=0&amp;app_id=58479" allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media; web-share" referrerpolicy="strict-origin-when-cross-origin" title="Clean Muscle Up Example"></iframe></div>
-        <div class="video-route"><span class="play"></span><span>Watch this first: <b>Clean Muscle Up Example</b></span></div>
+        ${videoToggle(VIDEO_CLEAN, "Clean Muscle Up Example")}
       </div>`;
     if(res.minimums.length){
       html += `<p class="lead" style="margin-top:8px;">Worth knowing: <b style="color:var(--chalk)">${res.minimums.map(m=>m.name).join(", ")}</b> ${res.minimums.length===1?"is":"are"} still at Minimum. You can attempt now, but pushing ${res.minimums.length===1?"it":"these"} to Good will make your first rep smoother and more repeatable.</p>`;
@@ -953,7 +954,7 @@ function renderResult(res){
         <p>${secondIntro}</p>
         <div class="fc-block"><span class="fc-label">Primary training focus</span>${res.secondary.focus}</div>
         <div class="fc-block"><span class="fc-label">Supportive work</span>${res.secondary.supportive}</div>
-        <div class="video-route"><span class="play"></span><span>Watch this first: <b>${res.secondary.video}</b></span></div>
+        ${VIDEOS[res.secondary.key] ? videoToggle(VIDEOS[res.secondary.key], res.secondary.video) : `<div class="video-route"><span class="play"></span><span>Watch this first: <b>${res.secondary.video}</b></span></div>`}
       </div>`;
     }
     if(res.strengths.length){
