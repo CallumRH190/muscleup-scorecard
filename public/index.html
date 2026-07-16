@@ -633,6 +633,30 @@ function openVideo(uid, id, title){
 const state = { gate:{}, scores:{}, screen:"intro" };
 const ORDER = ["intro","gate","r1","r2","r3","r4","r5","r6","r7","email","result"];
 
+/* ---------------- anonymous funnel tracking ---------------- */
+// Counts stage reach only. No cookies, no personal data: a random session
+// id plus an event name, insert-only into Supabase.
+const SESSION_ID = (crypto.randomUUID ? crypto.randomUUID() : String(Math.random()).slice(2) + Date.now());
+const _tracked = new Set();
+function track(event){
+  if(_tracked.has(event)) return;
+  _tracked.add(event);
+  try {
+    fetch("https://wzeiwntvhqvhdurowgux.supabase.co/rest/v1/muscleup_events", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "apikey": "sb_publishable_kMdFesGsSqX0flb1fErnOw_1jCuNk0T",
+        "Authorization": "Bearer sb_publishable_kMdFesGsSqX0flb1fErnOw_1jCuNk0T",
+        "Prefer": "return=minimal"
+      },
+      body: JSON.stringify({ session: SESSION_ID, event: event }),
+      keepalive: true
+    }).catch(()=>{});
+  } catch(e){}
+}
+track("visit");
+
 /* ---------------- build UI ---------------- */
 function buildGate(){
   document.querySelectorAll("[data-gate]").forEach(box=>{
@@ -705,7 +729,11 @@ function go(key){
   document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
   document.getElementById("s-"+key).classList.add("active");
   updateStrap();
-  if(key === "email") buildPreview();
+  if(key === "gate") track("started");
+  if(key === "r1") track("passed_gate");
+  if(key === "r4") track("halfway");
+  if(key === "email"){ track("reached_email"); buildPreview(); }
+  if(key === "result") track("submitted");
   window.scrollTo({top:0,behavior:"smooth"});
 }
 // Blurred teaser of the user's actual scorecard behind the email gate.
