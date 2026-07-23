@@ -399,7 +399,8 @@ function sendToEmailPlatform(email, result){
     email: email,
     entry_gate: state.gate,
     scores: state.scores,
-    primary_focus: result.primaryKey
+    primary_focus: result.primaryKey,
+    src: SRC
   };
   fetch("/api/submit", {
     method: "POST",
@@ -639,6 +640,8 @@ const ORDER = ["intro","gate","r1","r2","r3","r4","r5","r6","r7","email","result
 // Counts stage reach only. No cookies, no personal data: a random session
 // id plus an event name, insert-only into Supabase.
 const SESSION_ID = (crypto.randomUUID ? crypto.randomUUID() : String(Math.random()).slice(2) + Date.now());
+// Traffic source label from the link, e.g. ?src=mc for ManyChat, ?src=bio for the bio link.
+const SRC = (new URLSearchParams(location.search).get("src") || "").slice(0, 40) || null;
 const _tracked = new Set();
 function track(event){
   if(_tracked.has(event)) return;
@@ -652,7 +655,7 @@ function track(event){
         "Authorization": "Bearer sb_publishable_kMdFesGsSqX0flb1fErnOw_1jCuNk0T",
         "Prefer": "return=minimal"
       },
-      body: JSON.stringify({ session: SESSION_ID, event: event }),
+      body: JSON.stringify({ session: SESSION_ID, event: event, src: SRC }),
       keepalive: true
     }).catch(()=>{});
   } catch(e){}
@@ -904,7 +907,8 @@ function blueprintCta(){
         entry_gate: {},
         scores: state.scores || {},
         primary_focus: "blueprint-interest",
-        tag: "blueprint-interest"
+        tag: "blueprint-interest",
+        src: SRC
       })
     }).catch(()=>{});
   } catch(e){}
