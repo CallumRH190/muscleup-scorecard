@@ -135,7 +135,7 @@ export default async function handler(req, res){
   if (typeof body === "string") {
     try { body = JSON.parse(body); } catch { body = {}; }
   }
-  const { email, entry_gate, scores, primary_focus } = body || {};
+  const { email, entry_gate, scores, primary_focus, src } = body || {};
 
   if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) {
     res.status(400).json({ error: "Valid email required" });
@@ -162,7 +162,8 @@ export default async function handler(req, res){
         entry_gate: entry_gate || {},
         scores: scores || {},
         primary_focus: focusKey,
-        tag: "muscleup-diagnostic"
+        tag: "muscleup-diagnostic",
+        src: (typeof src === "string" ? src.slice(0, 40) : null)
       })
     });
   } catch (e) {
