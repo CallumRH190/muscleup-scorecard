@@ -353,14 +353,10 @@
 
   <!-- ============ EMAIL ============ -->
   <section class="screen" id="s-email">
-    <div class="kicker">One last thing</div>
-    <h2 class="display">Your scorecard is ready</h2>
+    <div class="kicker">Before the 7 requirements</div>
+    <h2 class="display">Where should I send your result?</h2>
     <hr class="rule">
-    <p class="lead">Your 7 requirement scorecard is built. Enter your email and I will show it now, plus send your result breakdown so you can retest and track progress.</p>
-    <div class="preview-wrap" aria-hidden="true">
-      <div class="preview-board" id="previewBoard"></div>
-      <div class="preview-lock"><div class="lock"></div><span>Your scorecard</span></div>
-    </div>
+    <p class="lead">You are about to score yourself on the 7 requirements. Best guess is fine. Your result lands here the moment you finish, with every test standard so you can verify at the gym and retest.</p>
     <div class="pdf-card">
       <div class="pdf-thumb"><div class="ring"></div><div class="bar"></div><div class="bar"></div><span class="tag">PDF</span></div>
       <div class="pdf-copy"><b>Bonus: the 7 Requirements Scorecard PDF.</b> Every standard on one page so you can retest monthly and watch the reds turn green.</div>
@@ -370,7 +366,7 @@
       <input type="email" id="emailInput" placeholder="you@example.com" autocomplete="email">
       <p class="err" id="emailErr">That does not look like a valid email. Check and try again.</p>
       <div class="row">
-        <button class="btn btn-primary" id="emailBtn" onclick="submitEmail()">Show my result</button>
+        <button class="btn btn-primary" id="emailBtn" onclick="submitEmail()">Continue to the diagnostic</button>
         <button class="btn btn-ghost" onclick="goBackFromEmail()">Back</button>
       </div>
     </div>
@@ -635,8 +631,8 @@ function openVideo(uid, id, title){
 }
 
 /* ---------------- state ---------------- */
-const state = { gate:{}, scores:{}, screen:"intro" };
-const ORDER = ["intro","gate","r1","r2","r3","r4","r5","r6","r7","email","result"];
+const state = { gate:{}, scores:{}, screen:"intro", email:null, finished:false };
+const ORDER = ["intro","gate","email","r1","r2","r3","r4","r5","r6","r7","result"];
 
 /* ---------------- anonymous funnel tracking ---------------- */
 // Counts stage reach only. No cookies, no personal data: a random session
@@ -739,8 +735,16 @@ function go(key){
   if(key === "gate") track("started");
   if(key === "r1") track("passed_gate");
   if(key === "r4") track("halfway");
-  if(key === "email"){ track("reached_email"); buildPreview(); }
-  if(key === "result") track("submitted");
+  if(key === "email") track("reached_email");
+  if(key === "result"){
+    track("submitted");
+    if(!state.finished){
+      state.finished = true;
+      const result = computeResult();
+      sendToEmailPlatform(state.email, result);
+      renderResult(result);
+    }
+  }
   window.scrollTo({top:0,behavior:"smooth"});
 }
 // Blurred teaser of the user's actual scorecard behind the email gate.
@@ -756,8 +760,8 @@ function buildPreview(){
 }
 function goNext(cur){ go(ORDER[ORDER.indexOf(cur)+1]); }
 function goPrev(cur){ go(ORDER[ORDER.indexOf(cur)-1]); }
-function goBackFromEmail(){ go("r7"); }
-function gateNext(){ go("r1"); }
+function goBackFromEmail(){ go("gate"); }
+function gateNext(){ go("email"); }
 
 function updateStrap(){
   const idx = ORDER.indexOf(state.screen);
@@ -765,7 +769,7 @@ function updateStrap(){
   document.getElementById("strapFill").style.width = pct+"%";
   document.getElementById("ringmark").style.left = pct+"%";
   document.querySelectorAll(".station").forEach((d,i)=>d.classList.toggle("done", i<=idx));
-  const labels = {intro:"", gate:"Entry Gate", r1:"1 / 7", r2:"2 / 7", r3:"3 / 7", r4:"4 / 7", r5:"5 / 7", r6:"6 / 7", r7:"7 / 7", email:"Almost there", result:"Your result"};
+  const labels = {intro:"", gate:"Entry Gate", r1:"1 / 7", r2:"2 / 7", r3:"3 / 7", r4:"4 / 7", r5:"5 / 7", r6:"6 / 7", r7:"7 / 7", email:"Where to send it", result:"Your result"};
   document.getElementById("strapLabel").textContent = labels[state.screen] || "";
 }
 
@@ -777,10 +781,23 @@ function submitEmail(){
   const valid = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email);
   if(!valid){ err.style.display="block"; input.focus(); return; }
   err.style.display="none";
-  const result = computeResult();
-  sendToEmailPlatform(email, result);
-  renderResult(result);
-  go("result");
+  state.email = email;
+  // Early capture: store the lead now so a mid-diagnostic exit is recoverable.
+  try {
+    fetch("https://wzeiwntvhqvhdurowgux.supabase.co/rest/v1/muscleup_leads", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "apikey": "sb_publishable_kMdFesGsSqX0flb1fErnOw_1jCuNk0T",
+        "Authorization": "Bearer sb_publishable_kMdFesGsSqX0flb1fErnOw_1jCuNk0T",
+        "Prefer": "return=minimal"
+      },
+      body: JSON.stringify({ email: email, entry_gate: state.gate, scores: {}, primary_focus: "early-capture", tag: "early-capture", src: SRC }),
+      keepalive: true
+    }).catch(()=>{});
+  } catch(e){}
+  track("email_captured");
+  go("r1");
 }
 
 /* ---------------- diagnostic logic ---------------- */
@@ -1003,7 +1020,7 @@ function renderResult(res){
 }
 
 function restart(){
-  state.gate = {}; state.scores = {};
+  state.gate = {}; state.scores = {}; state.email = null; state.finished = false;
   document.querySelectorAll(".opt").forEach(x=>x.classList.remove("selected"));
   document.getElementById("gateNext").disabled = true;
   REQS.forEach(r=>document.getElementById("next-"+r.key).disabled = true);
