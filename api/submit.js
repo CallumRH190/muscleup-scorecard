@@ -192,6 +192,21 @@ export default async function handler(req, res){
       console.error("Resend contact add failed:", e);
     }
 
+    // Fire the signup event so the 30 day nurture automation starts for this contact
+    try {
+      await fetch("https://api.resend.com/events/send", {
+        method: "POST",
+        headers: rHeaders,
+        body: JSON.stringify({
+          event: "scorecard.signup",
+          email,
+          payload: { main_block: focusKey || "", src: (typeof src === "string" ? src.slice(0, 40) : "") }
+        })
+      });
+    } catch (e) {
+      console.error("Resend event send failed:", e);
+    }
+
     // Send the result email
     try {
       const emailRes = await fetch("https://api.resend.com/emails", {
