@@ -287,7 +287,7 @@
     <h1 class="display">Find the one thing<br>stopping your first muscle up</h1>
     <hr class="rule">
     <div class="video-embed" style="margin-bottom:22px;aspect-ratio:16/9;max-width:560px;margin-left:0;"><iframe src="https://player.vimeo.com/video/1214617882?badge=0&color=c89b6d&autopause=0&player_id=0&app_id=58479" allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media; web-share" referrerpolicy="strict-origin-when-cross-origin" title="Find your missing requirement"></iframe></div>
-    <button class="btn btn-primary" onclick="go('gate')">Find my missing requirement</button>
+    <button class="btn btn-primary" onclick="go('r1')">Find my missing requirement</button>
     <p class="small" style="margin-top:12px;margin-bottom:26px;">Takes about 3 minutes. Free. No gym needed. Score yourself from your recent training, and your result email includes every test standard so you can verify at the gym and retest.</p>
     <p class="lead">A clean ring muscle up is built from <b style="color:var(--chalk)">7 key requirements</b>. This free diagnostic finds the one holding you back, so you know exactly what to train next.</p>
     <p class="lead">Most people chase their first muscle up by trying more reps, watching more tutorials, or training everything at once. <b style="color:var(--chalk)">That is the slow way.</b></p>
@@ -305,15 +305,15 @@
     <!-- TESTIMONIAL SLOT: when Callum has a real quote, add it here, e.g.
     <div class="pdf-card" style="margin-bottom:22px;"><div class="pdf-copy">"Quote from a real student." <b>— Name</b></div></div>
     -->
-    <button class="btn btn-primary" onclick="go('gate')">Find my missing requirement</button>
+    <button class="btn btn-primary" onclick="go('r1')">Find my missing requirement</button>
   </section>
 
   <!-- ============ ENTRY GATE ============ -->
   <section class="screen" id="s-gate">
-    <div class="kicker">Entry Gate</div>
-    <h2 class="display">Before the 7 requirements</h2>
+    <div class="kicker">Foundation Check</div>
+    <h2 class="display">Last step: your foundation</h2>
     <hr class="rule">
-    <p class="lead" style="margin-bottom:28px;">The muscle up pathway assumes a base of pulling and pushing strength. Answer honestly from your recent training. Best guess is fine. You do not need to test anything right now, and your result email lets you retest everything at the gym.</p>
+    <p class="lead" style="margin-bottom:28px;">Your 7 scores are locked in. These last three checks set your starting point, nothing here is pass or fail. A strong pulling and pushing base raises every requirement you just scored, so this tells us where your plan begins. Answer honestly from recent training. Best guess is fine.</p>
 
     <div class="gate-item">
       <h3>Strict pull ups on rings</h3>
@@ -344,8 +344,8 @@
     </div>
 
     <div class="row">
-      <button class="btn btn-ghost" onclick="go('intro')">Back</button>
-      <button class="btn btn-primary" id="gateNext" disabled onclick="gateNext()">Continue</button>
+      <button class="btn btn-ghost" onclick="go('email')">Back</button>
+      <button class="btn btn-primary" id="gateNext" disabled onclick="gateNext()">See my result</button>
     </div>
   </section>
 
@@ -354,10 +354,10 @@
 
   <!-- ============ EMAIL ============ -->
   <section class="screen" id="s-email">
-    <div class="kicker">Before the 7 requirements</div>
+    <div class="kicker">Your 7 scores are in</div>
     <h2 class="display">Where should I send your result?</h2>
     <hr class="rule">
-    <p class="lead">You are about to score yourself on the 7 requirements. Best guess is fine. Your result lands here the moment you finish, with every test standard so you can verify at the gym and retest.</p>
+    <p class="lead">Three quick foundation checks left, then your full result lands here the moment you finish, with every test standard so you can verify at the gym and retest.</p>
     <div class="pdf-card">
       <div class="pdf-thumb"><div class="ring"></div><div class="bar"></div><div class="bar"></div><span class="tag">PDF</span></div>
       <div class="pdf-copy"><b>Bonus: the 7 Requirements Scorecard PDF.</b> Every standard on one page so you can retest monthly and watch the reds turn green.</div>
@@ -367,7 +367,7 @@
       <input type="email" id="emailInput" placeholder="you@example.com" autocomplete="email">
       <p class="err" id="emailErr">That does not look like a valid email. Check and try again.</p>
       <div class="row">
-        <button class="btn btn-primary" id="emailBtn" onclick="submitEmail()">Continue to the diagnostic</button>
+        <button class="btn btn-primary" id="emailBtn" onclick="submitEmail()">Continue</button>
         <button class="btn btn-ghost" onclick="goBackFromEmail()">Back</button>
       </div>
     </div>
@@ -633,7 +633,7 @@ function openVideo(uid, id, title){
 
 /* ---------------- state ---------------- */
 const state = { gate:{}, scores:{}, screen:"intro", email:null, finished:false };
-const ORDER = ["intro","gate","email","r1","r2","r3","r4","r5","r6","r7","result"];
+const ORDER = ["intro","r1","r2","r3","r4","r5","r6","r7","email","gate","result"];
 
 /* ---------------- anonymous funnel tracking ---------------- */
 // Counts stage reach only. No cookies, no personal data: a random session
@@ -733,8 +733,8 @@ function go(key){
   document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
   document.getElementById("s-"+key).classList.add("active");
   updateStrap();
-  if(key === "gate") track("started");
-  if(key === "r1") track("passed_gate");
+  if(key === "r1") track("started");
+  if(key === "gate") track("foundation");
   if(key === "r4") track("halfway");
   if(key === "email") track("reached_email");
   if(key === "result"){
@@ -761,8 +761,8 @@ function buildPreview(){
 }
 function goNext(cur){ go(ORDER[ORDER.indexOf(cur)+1]); }
 function goPrev(cur){ go(ORDER[ORDER.indexOf(cur)-1]); }
-function goBackFromEmail(){ go("gate"); }
-function gateNext(){ go("email"); }
+function goBackFromEmail(){ go("r7"); }
+function gateNext(){ go("result"); }
 
 function updateStrap(){
   const idx = ORDER.indexOf(state.screen);
@@ -770,7 +770,7 @@ function updateStrap(){
   document.getElementById("strapFill").style.width = pct+"%";
   document.getElementById("ringmark").style.left = pct+"%";
   document.querySelectorAll(".station").forEach((d,i)=>d.classList.toggle("done", i<=idx));
-  const labels = {intro:"", gate:"Entry Gate", r1:"1 / 7", r2:"2 / 7", r3:"3 / 7", r4:"4 / 7", r5:"5 / 7", r6:"6 / 7", r7:"7 / 7", email:"Where to send it", result:"Your result"};
+  const labels = {intro:"", gate:"Foundation", r1:"1 / 7", r2:"2 / 7", r3:"3 / 7", r4:"4 / 7", r5:"5 / 7", r6:"6 / 7", r7:"7 / 7", email:"Where to send it", result:"Your result"};
   document.getElementById("strapLabel").textContent = labels[state.screen] || "";
 }
 
@@ -798,7 +798,7 @@ function submitEmail(){
     }).catch(()=>{});
   } catch(e){}
   track("email_captured");
-  go("r1");
+  go("gate");
 }
 
 /* ---------------- diagnostic logic ---------------- */
@@ -956,17 +956,19 @@ function renderResult(res){
     const missing = res.failedGateItems.map(k=>names[k]);
     html += `
       <div class="kicker">Your result</div>
-      <h2 class="display">You are before the pathway, and that is fine</h2>
+      <h2 class="display">Your fastest route starts with your foundation</h2>
       <hr class="rule">
-      <p class="lead">You have not failed anything. You are simply before the muscle up pathway itself. Right now, muscle up drills would be wasted effort. The fastest route to your first muscle up is to build the base first.</p>
+      <p class="lead">Your 7 requirement scores below are real and they stay valid. Right now the biggest single thing you can do to raise all of them at once is build your base strength. That is not a detour from the muscle up. It is the fastest version of the pathway for where you are today.</p>
       <div class="focus-card card-main">
         <div class="fc-kicker">🔴 Your current priority</div>
         <h3>Build foundational pulling and pushing strength</h3>
         <p>Close the gap on: <b style="color:var(--chalk)">${missing.join(" · ")}</b></p>
-        <div class="fc-block"><span class="fc-label">Come back when</span>You can do 10 clean strict pull ups and 5 clean dips on the rings, pain free. Then retake this scorecard. The 7 requirements will be waiting.</div>
+        <div class="fc-block"><span class="fc-label">Why this first</span>Every requirement on your board below is powered by base pulling and pushing strength. Build the base and you will watch several of those pins move at once when you retest.</div>
+        <div class="fc-block"><span class="fc-label">Retest when</span>You can do 10 clean strict pull ups and 5 clean dips on the rings, pain free. Retake this scorecard then and compare your board. The 7 requirements will be waiting.</div>
         ${videoToggle("1209558077", "Ring Pull Up Standards")}
         ${videoToggle("1209524652", "Ring Dip Standard")}
       </div>`;
+    html += boardHTML(res);
     html += ctaHTML();
   }
   else if(!res.primary){
