@@ -9,6 +9,25 @@ const SUPABASE_URL = process.env.SUPABASE_URL || "https://wzeiwntvhqvhdurowgux.s
 const SUPABASE_KEY = process.env.SUPABASE_KEY || "sb_publishable_kMdFesGsSqX0flb1fErnOw_1jCuNk0T";
 const RESEND_API_KEY = process.env.RESEND_API_KEY;
 
+function buildText(baseUrl){
+  const pdfUrl = baseUrl + "/7-requirements-cheat-sheet.pdf";
+  return [
+    "Your 7 Requirements Cheat Sheet is ready.",
+    "",
+    "Every standard between you and your first ring muscle up, on one page. All 7 requirements, each with the Minimum, Good and Ideal level.",
+    "",
+    "Download it here: " + pdfUrl,
+    "",
+    "How to use it: work down the list in order. The first requirement where you cannot tick Minimum is your main block. Train that one first.",
+    "",
+    "Not sure which level you are on? Take the free 3 minute diagnostic: " + baseUrl + "/?src=sheet-email",
+    "",
+    "Reply to this email with the word got it and I will know it landed.",
+    "",
+    "Callum on Rings"
+  ].join("\n");
+}
+
 function buildHtml(baseUrl){
   const pdfUrl = baseUrl + "/7-requirements-cheat-sheet.pdf";
   const scorecardUrl = baseUrl + "/?src=sheet-email";
@@ -27,7 +46,8 @@ function buildHtml(baseUrl){
             <p style="margin:0 0 12px;color:#c9c2b0;font-size:14px;line-height:1.6;">Take the free 3 minute diagnostic. It scores you on all 7 requirements and shows you exactly which one is blocking your muscle up.</p>
             <a href="${scorecardUrl}" style="color:#c89b6d;font-weight:bold;text-decoration:none;font-size:14px;">Take the scorecard &rarr;</a>
           </div>
-          <p style="color:#8d8571;font-size:12px;margin:32px 0 0;">Callum on Rings</p>
+          <p style="margin:24px 0 0;color:#c9c2b0;font-size:14px;line-height:1.6;">One favour: hit reply and say <b style="color:#f1ede2;">got it</b>. It tells your inbox these emails belong there, and it tells me the sheet landed.</p>
+          <p style="color:#8d8571;font-size:12px;margin:28px 0 0;">Callum on Rings</p>
         </td></tr>
       </table>
     </td></tr></table>
@@ -122,8 +142,9 @@ export default async function handler(req, res){
         body: JSON.stringify({
           from: FROM_EMAIL,
           to: email,
-          subject: "Your 7 Requirements Cheat Sheet",
-          html: buildHtml(baseUrl)
+          subject: "Your 7 muscle up standards, on one page",
+          html: buildHtml(baseUrl),
+          text: buildText(baseUrl)
         })
       });
       if (!emailRes.ok) {
