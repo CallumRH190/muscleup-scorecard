@@ -117,7 +117,13 @@ function buildHtml(result, scorecardUrl){
           <h1 style="color:#f1ede2;font-size:26px;margin:0 0 20px;text-transform:uppercase;letter-spacing:1px;">Here is your result</h1>
           <div style="width:48px;height:3px;background:#c89b6d;margin:0 0 24px;"></div>
           ${paras}
-          <a href="${scorecardUrl}" style="display:inline-block;margin-top:12px;background:#c89b6d;color:#171511;text-decoration:none;font-weight:bold;padding:13px 26px;border-radius:8px;text-transform:uppercase;letter-spacing:1px;font-size:14px;">Retake the scorecard</a>
+          <div style="margin:8px 0 20px;padding:18px 20px;background:#1f1c17;border:1px solid #353026;border-left:3px solid #c89b6d;border-radius:10px;">
+            <p style="margin:0 0 6px;color:#c89b6d;font-size:11px;letter-spacing:2px;text-transform:uppercase;font-weight:bold;">Your bonus</p>
+            <p style="margin:0 0 10px;color:#f1ede2;font-size:15px;font-weight:bold;">The 7 Requirements Cheat Sheet</p>
+            <p style="margin:0 0 12px;color:#c9c2b0;font-size:14px;line-height:1.6;">Every standard on one printable page. Tick where you are today, train the first gap, retest in two weeks.</p>
+            <a href="${scorecardUrl}/7-requirements-cheat-sheet.pdf" style="display:inline-block;background:#c89b6d;color:#171511;text-decoration:none;font-weight:bold;padding:11px 22px;border-radius:8px;text-transform:uppercase;letter-spacing:1px;font-size:13px;">Download the cheat sheet</a>
+          </div>
+          <a href="${scorecardUrl}" style="display:inline-block;margin-top:12px;background:transparent;border:1px solid #a87c4f;color:#c89b6d;text-decoration:none;font-weight:bold;padding:12px 25px;border-radius:8px;text-transform:uppercase;letter-spacing:1px;font-size:14px;">Retake the scorecard</a>
           <p style="color:#8d8571;font-size:12px;margin:32px 0 0;">Callum on Rings. Clean reps. Earned standards.</p>
         </td></tr>
       </table>
